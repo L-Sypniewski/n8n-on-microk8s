@@ -1,19 +1,21 @@
-#kubernetes 
+#kubernetes
 
 This guide describes how to expose services running in a Microk8s so that they're accessible with a public URL.
 
 # Prerequisites
 
 Before proceeding make sure you've followed [[MicroK8s cluster with load balancer and certificate]] guide as you the following has to be set up:
+
 - Ingress and Ingress Controller - nginx
 - Metallb
-	- The solution used `metallb` for load balancing. IP range: `192.168.1.200-192.168.1.220`
+  - The solution used `metallb` for load balancing. IP range: `192.168.1.200-192.168.1.220`
 - Domain has been purchased
-- Dynamic DNS to make your device accessible with a domain name 
+- Dynamic DNS to make your device accessible with a domain name
 
 # Exposing services
 
 In this guide I'll describe two methods of making the services publicly available
+
 - [[Exposing services publicly - MicroK8s#Ingress Controller with Load Balancer Service|Ingress Controller with Load Balancer Service]]
 - [[Exposing services publicly - MicroK8s#Load Balancer only|Load Balancer only]]
 
@@ -28,15 +30,18 @@ You should follow [[MicroK8s cluster with load balancer and certificate]] guide 
 ### Port forwarding
 
 We need to have a public IP of the Load Balancer, obtain it with the following command:
+
 ```sh
 kubectl get svc --all-namespaces
 ```
 
 Example output (trimmed):
+
 ```sh
 NAME      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                      AGE
 ingress   LoadBalancer   10.152.183.56   192.168.1.220   80:31247/TCP,443:32526/TCP   116m
 ```
+
 According to the output we need to redirect the traffic to IP `192.168.1.220` for ports `80` and `443` (http and https).
 
 In the picture below it's shown how to setup port forwarding for my router:
@@ -48,14 +53,16 @@ If you cannot connect to your service using the public endpoint check if a firew
 
 ## Load Balancer only
 
-It may happen that you'll have a service you'd like to expose publicly and it already has a Kubernetes Service like #rabbitmq . In such case theres no need to use Ingress as you can redirect traffic directly to service's Service. 
+It may happen that you'll have a service you'd like to expose publicly and it already has a Kubernetes Service like #rabbitmq . In such case theres no need to use Ingress as you can redirect traffic directly to service's Service.
 
 In the previous picture you can see the port forwarding rule for RabbitMQ - the IP is different than the one for Ingress. It IP was obtained with the same command as before:
+
 ```sh
 kubectl get svc --all-namespaces
 ```
 
 Example of output:
+
 ```sh
 NAME                         TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                                                                         AGE
 hello-world-rabbitmq-nodes   ClusterIP      None             <none>          4369/TCP,25672/TCP                                                              23h
@@ -67,6 +74,7 @@ hello-world-rabbitmq         LoadBalancer   10.152.183.190   192.168.1.200   567
 The IP for LoadBalancer Service is the one that should be used for port forwarding.
 
 Kubernetes manifest for RabbitMq - **`tls` needs to be set up** for this to work:
+
 ```yaml
 apiVersion: rabbitmq.com/v1beta1
 kind: RabbitmqCluster
@@ -99,4 +107,4 @@ To connect to a Service exposed with Load Balancer only you need to use your dom
 
 # Examples
 
-You can check out [my forked repo](https://github.com/L-Sypniewski/hellocontainers-arm) for examples.
+You can check out [my forked repo](https://github.com/L-mydomain/hellocontainers-arm) for examples.
