@@ -1,0 +1,58 @@
+# ingress.yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: mydomain-dev
+  name: nginx-ingress-microk8s
+  labels:
+    app: nginx-ingress-microk8s
+  annotations:
+    cert-manager.io/cluster-issuer: "cluster-issuer-mydomain-dev"
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/use-forwarded-headers: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" # Set client_max_body_size to 0
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "900" # Set proxy_read_timeout to 900
+    nginx.ingress.kubernetes.io/configuration-snippet: |   # Additional security headers for n8n (matching Docker Compose config)
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header Strict-Transport-Security "max-age=315360000; includeSubDomains; preload" always;
+spec:
+  tls:
+    - hosts:
+        - n8n.mydomain.dev
+      secretName: n8n-tls
+  ingressClassName: nginx
+  rules:
+    - host: "n8n.mydomain.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress
+  namespace: ingress
+spec:
+  selector:
+    name: nginx-ingress-microk8s
+  type: LoadBalancer
+  loadBalancerIP: 192.168.1.220
+  ports:
+    #  Use only HTTPS for security - this allows to block port 80 in firewall settings
+    # - name: http
+    #   protocol: TCP
+    #   port: 80
+    #   targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443

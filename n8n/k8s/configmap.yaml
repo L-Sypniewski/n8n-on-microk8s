@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+  namespace: mydomain-dev
+data:
+  N8N_HOST: "n8n.mydomain.dev"
+  WEBHOOK_URL: "https://n8n.mydomain.dev/"
+  GENERIC_TIMEZONE: "Europe/Berlin"
+  DB_TYPE: "sqlite"
+  DB_SQLITE_PATH: "/home/node/.n8n/database.sqlite"
+  N8N_USER_FOLDER: "/home/node/.n8n"

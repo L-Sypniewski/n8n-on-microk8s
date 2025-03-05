@@ -1,0 +1,22 @@
+---
+version: 0.1.0
+
+# Configure API server to use encryption at rest
+extraKubeAPIServerArgs:
+  --encryption-provider-config: "$SNAP_DATA/args/encryption-config.yaml"
+
+# Define the encryption configuration directly in this file
+extraConfigFiles:
+  encryption-config.yaml: |
+    apiVersion: apiserver.config.k8s.io/v1
+    kind: EncryptionConfiguration
+    resources:
+      - resources:
+          - secrets
+        providers:
+          - aescbc:
+              keys:
+                - name: key1
+                  # Generated with: openssl rand -base64 32
+                  secret: <stored in Keepass>
+          - identity: {}  # Fallback to allow reading unencrypted secrets

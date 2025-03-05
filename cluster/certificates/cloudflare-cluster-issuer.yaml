@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: cert-domain-tls-key-cloudflare
+  namespace: cert-manager
+  labels:
+    tag: homelab-setup
+stringData:
+  api-token: <TOKEN>
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cluster-issuer-mydomain-dev
+  namespace: cert-manager
+  labels:
+    tag: homelab-setup
+spec:
+  acme:
+    email: example@abc.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: cluster-issuer-account-key
+    solvers:
+      - dns01:
+          cloudflare:
+            email: example@abc.com
+            apiTokenSecretRef:
+              name: cert-domain-tls-key-cloudflare
+              key: api-token

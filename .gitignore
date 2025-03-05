@@ -1,0 +1,7 @@
+*secret*[!yaml]
+*key*[!yaml]
+*pass*[!yaml]
+kustomize
+registry-htpasswd
+
+!create-docker-secret.sh
