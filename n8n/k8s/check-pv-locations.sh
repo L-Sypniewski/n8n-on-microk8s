@@ -19,9 +19,9 @@ FILES_PV=$(kubectl get pv -o jsonpath="{.items[?(@.spec.claimRef.name=='n8n-loca
 
 # Display the host paths
 echo "n8n data path on host:"
-kubectl get pv $DATA_PV -o jsonpath="{.spec.hostPath.path}" && echo -e "\n"
+kubectl get pv "$DATA_PV" -o jsonpath="{.spec.hostPath.path}" && echo -e "\n"
 
 echo "n8n files path on host:"
-kubectl get pv $FILES_PV -o jsonpath="{.spec.hostPath.path}" && echo -e "\n"
+kubectl get pv "$FILES_PV" -o jsonpath="{.spec.hostPath.path}" && echo -e "\n"
 
 echo "These paths on your host system contain the actual n8n data"

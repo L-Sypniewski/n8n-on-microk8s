@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Secret
 type: Opaque
@@ -7,7 +8,10 @@ metadata:
   labels:
     tag: homelab-setup
 stringData:
-  api-token: <TOKEN>
+  # IMPORTANT: Replace with your actual Cloudflare API token
+  # Generate at: https://dash.cloudflare.com/profile/api-tokens
+  # Required permissions: Zone:DNS:Edit, Zone:Zone:Read for all zones
+  api-token: "REPLACE_WITH_YOUR_CLOUDFLARE_API_TOKEN"
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -18,14 +22,16 @@ metadata:
     tag: homelab-setup
 spec:
   acme:
-    email: example@abc.com
+    # IMPORTANT: Replace with your actual email address
+    email: REPLACE_WITH_YOUR_EMAIL@example.com
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: cluster-issuer-account-key
     solvers:
       - dns01:
           cloudflare:
-            email: example@abc.com
+            # IMPORTANT: Replace with your actual email address (same as above)
+            email: REPLACE_WITH_YOUR_EMAIL@example.com
             apiTokenSecretRef:
               name: cert-domain-tls-key-cloudflare
               key: api-token
