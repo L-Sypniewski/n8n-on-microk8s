@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,9 +17,20 @@ spec:
         app: n8n
     spec:
       serviceAccountName: n8n-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: n8n
         image: docker.n8n.io/n8nio/n8n
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false  # n8n needs to write to temp files
+          capabilities:
+            drop:
+              - ALL
         ports:
         - containerPort: 5678
         env:
@@ -61,6 +73,13 @@ spec:
           mountPath: /home/node/.n8n
         - name: n8n-local-files
           mountPath: /files
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
         startupProbe:
           httpGet:
             path: /

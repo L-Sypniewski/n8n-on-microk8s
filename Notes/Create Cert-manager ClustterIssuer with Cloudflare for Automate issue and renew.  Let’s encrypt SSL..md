@@ -113,7 +113,7 @@ spec:
 Save your config and apply it to your Kubernetes cluster.
 
 ```
-kubectrl apply -f api-helloworld-ingress.yml
+kubectl apply -f api-helloworld-ingress.yml
 kubectl get secrets --field-selector type=kubernetes.io/tls -A #checking your certificate
 ```
 
